@@ -30,14 +30,14 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support: vbe 
-00000000000i[MEM0 ] allocated memory at 0x7f3b5eb9a010. after alignment, vector=0x7f3b5eb9b000
+00000000000i[MEM0 ] allocated memory at 0x7fd814957010. after alignment, vector=0x7fd814958000
 00000000000i[MEM0 ] 32.00MB
 00000000000i[MEM0 ] mem block size = 0x00100000, blocks=32
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
 00000000000e[DEV  ] Bochs is not compiled with PCI support
 00000000000i[     ] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Sun Dec  6 18:13:18 2015 (time0=1449443598)
+00000000000i[CMOS ] Setting initial clock to: Mon Dec  7 16:34:58 2015 (time0=1449524098)
 00000000000i[     ] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[     ] init_dev of 'pic' plugin device by virtual method
@@ -133,26 +133,26 @@
 00000590464i[VBIOS] VBE Bios $Id: vbe.c,v 1.64 2011/07/19 18:25:05 vruppert Exp $
 00001000003i[XGUI ] charmap update. Font Height is 16
 00031216657i[BIOS ] Booting from 0000:7c00
-189634809515p[     ] >>PANIC<< SIGNAL 2 caught
-189634809515i[CPU0 ] CPU is in real mode (active)
-189634809515i[CPU0 ] CS.mode = 16 bit
-189634809515i[CPU0 ] SS.mode = 16 bit
-189634809515i[CPU0 ] EFER   = 0x00000000
-189634809515i[CPU0 ] | EAX=0000002c  EBX=00000000  ECX=00090000  EDX=00000000
-189634809515i[CPU0 ] | ESP=0000c7ac  EBP=0000c7c6  ESI=000e0d5e  EDI=0000ffac
-189634809515i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df IF tf sf ZF af PF cf
-189634809515i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-189634809515i[CPU0 ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
-189634809515i[CPU0 ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
-189634809515i[CPU0 ] |  SS:2000( 0005| 0|  0) 00020000 0000ffff 0 0
-189634809515i[CPU0 ] |  ES:2000( 0005| 0|  0) 00020000 0000ffff 0 0
-189634809515i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-189634809515i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-189634809515i[CPU0 ] | EIP=0000e869 (0000e869)
-189634809515i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
-189634809515i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
-189634809515i[CPU0 ] 0x0000e869>> cli  : FA
-189634809515i[CMOS ] Last time is 1449462561 (Sun Dec  6 23:29:21 2015)
-189634809515i[XGUI ] Exit
-189634809515i[     ] restoring default signal behavior
-189634809515i[CTRL ] quit_sim called with exit code 1
+02280240000i[     ] cpu loop quit, shutting down simulator
+02280240000i[CPU0 ] CPU is in real mode (active)
+02280240000i[CPU0 ] CS.mode = 16 bit
+02280240000i[CPU0 ] SS.mode = 16 bit
+02280240000i[CPU0 ] EFER   = 0x00000000
+02280240000i[CPU0 ] | EAX=00000020  EBX=00000000  ECX=00090000  EDX=00000000
+02280240000i[CPU0 ] | ESP=0000c7ac  EBP=0000c7c6  ESI=000e0db2  EDI=0000ffac
+02280240000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+02280240000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+02280240000i[CPU0 ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
+02280240000i[CPU0 ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
+02280240000i[CPU0 ] |  SS:2000( 0005| 0|  0) 00020000 0000ffff 0 0
+02280240000i[CPU0 ] |  ES:2000( 0005| 0|  0) 00020000 0000ffff 0 0
+02280240000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+02280240000i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+02280240000i[CPU0 ] | EIP=0000e86d (0000e86d)
+02280240000i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
+02280240000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
+02280240000i[CPU0 ] 0x0000e86d>> cmp ax, word ptr ds:0x1c : 3B061C00
+02280240000i[CMOS ] Last time is 1449524326 (Mon Dec  7 16:38:46 2015)
+02280240000i[XGUI ] Exit
+02280240000i[     ] restoring default signal behavior
+02280240000i[CTRL ] quit_sim called with exit code 1

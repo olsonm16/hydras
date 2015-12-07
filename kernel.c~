@@ -599,17 +599,24 @@ int dir(char * directory) {
 	j = readSector(disk_directory, 2);
 	count = 0;
 
+	directory[count] = '\r';
+	directory[count] = '\n';
+
 	for (i = 0; i < 512; i += 32) {
 		if (disk_directory[i] != '\0') {
 			for (k = 0; k < 6; k++) {
-				directory[count] = disk_directory[i + k];
-				count++;
+				if (disk_directory[i + k] != '\0') {
+					directory[count] = disk_directory[i + k];
+					count++;
+				} else {
+					directory[count] = ' ';
+					count++;
+				};
 			};
 			directory[count] = '\r';
 			count++;
 			directory[count] = '\n';
 			count++;
-			//printString(directory);
 
 		};
 	};
