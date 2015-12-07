@@ -99,6 +99,17 @@ main() {
 					print("\r\nFile copied\r\n\0");
 				}
 			}
+		} else if (strCmp(buf, "help\0", 4)) {
+			print("\r\nHydras is a basic OS that can do a few things for you. \r\n\0");
+			print("The current implementation (Version 0.4) can work with files. \r\n\0");
+			print("To see the files you have on the disk, type dir. \r\n\0");
+			print("To view the contents of a file, enter type <filename> (no braces). \r\n\0");
+			print("To execute a program, type execute <progname>. \r\n\0");
+			print("One such program is txtedt. You may create and save a txt file using txtedt. \r\n\0");
+			print("Enter copy <source filename> <destination filename> to copy a file. \r\n\0");
+			print("Enter delete <filename> to delete a file. \r\n\0");
+			print("In version 0.5, we will implement processes explicitly. \r\n\0");
+		
 		} else {
 			print("\n\r\0");
 			print("Unrecognized command.\r\n\0");

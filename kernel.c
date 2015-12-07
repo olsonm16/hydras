@@ -36,6 +36,9 @@ int main() {
 	//makeTimerInterrupt();
 
 	//writeFile(largeFile, 4);
+	
+	printString("WELCOME TO THE HYDRAS OS\r\n\0");
+	printString("Type help for guidance.\r\n\0");
 
 
 	interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
