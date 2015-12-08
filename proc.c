@@ -1,4 +1,5 @@
 #include "proc.h"
+#include <stdio.h>
 
 /*
  * This function initializes all of the global variables and 
@@ -106,11 +107,29 @@ void releasePCB(struct PCB *pcb) {
  * Add the provided PCB to the tail of the ready queue.
  */
 void addToReady(struct PCB *pcb) {
+	//Case for nothing in the queue, so both head and tail are the one PCB added.
 	if (readyTail == NULL && readyHead == NULL) {
 		readyTail = pcb;
 		readyHead = pcb;
+	//Otherwise there's something in the queue.
 	} else if (readyHead != NULL) {
-		readyTail = pcb;
+		//If there's just one PCB in the queue, we need head to point to this next (second) PCB.
+		if (readyHead == readyTail) {
+			//So, next goes to that second pcb
+			readyHead -> next = pcb;
+			//Tail becomes that pcb
+			readyTail = pcb;
+			//And tail points back to the head
+			readyTail -> prev = readyHead;
+		//Otherwise, the head has a next element, so there are 2 or more PCBs...
+		} else {
+			//So the tail element needs to point next to this next element
+			readyTail -> next = pcb;
+			//And the tail element needs to point back to itself
+			pcb -> prev = readyTail;
+			//And now reset readyTail to the new PCB
+			readyTail = pcb;
+		}
 	};
 		
 	
@@ -121,7 +140,40 @@ void addToReady(struct PCB *pcb) {
  * pointer to it.
  */
 struct PCB *removeFromReady() {
-    return NULL;
+	
+	struct PCB *head;
+
+	//If we had nothing in the head, return NULL.
+	if (readyHead == NULL) {
+		return NULL;
+	//Otherwise, if we have one PCB in the queue, we want to return it
+	} else if (readyHead == readyTail) {
+		head = readyHead;
+		//And we want both the head and tail to now be null.
+		readyHead = NULL;
+		readyTail = NULL;
+	//Otherwise, we have two PCBs in the queue...	
+	} else if (readyHead -> next == readyTail) {
+		//We want to remove the head, so let's save it first.
+		head = readyHead;
+		//Now we need to let the one remaining element be the head and tail.
+		readyHead = readyTail;
+		//And we want those guys to point to NULL.
+		readyHead -> next = NULL;
+		readyHead -> prev = NULL;
+		readyTail -> next = NULL;
+		readyTail -> prev = NULL;
+	//Otherwise, we have more than two PCBs in the queue.
+	} else {
+		//First let's save the head.
+		head = readyHead;
+		//Now, we want the head to be what's next in the queue.
+		readyHead = head -> next;
+		//And we want the head to point back to NULL
+		readyHead -> prev = NULL;
+	};
+
+	return head;
 }
 
 
