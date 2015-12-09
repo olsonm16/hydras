@@ -7,6 +7,7 @@ int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
 void terminate();
+void showProcesses();
 
 int strCmp(char * a, char * b, int len) {
 	int i;
@@ -31,7 +32,7 @@ int readFile(char *fname, char *buf) {
 };
 
 int execute(char *fname) {
-	return interrupt(0x21, 0x04, fname, 0x2000, 0);
+	return interrupt(0x21, 0x04, fname, 0, 0);
 };
 
 int delete(char *fname) {
@@ -48,6 +49,10 @@ int dir(char * directory) {
 
 void terminate() {
 	return interrupt(0x21, 0x05, 0, 0, 0);
+};
+
+void showProcesses() {
+	return interrupt(0x21, 0x0A, 0, 0, 0);
 };
 
 

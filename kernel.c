@@ -26,6 +26,8 @@ int writeFile(char *fname, char *buffer, int sectors);
 int dir(char * directory);
 void handleTimerInterrupt(int segment, int stackPointer);
 void kStrCopy(char *src, char *dest, int len);
+void yield();
+void showProcesses();
 
 
 /*
@@ -34,16 +36,16 @@ Main just runs our shell function using an interrupt.
 int main() {
 
 	
-	initializeProcStructures();
-	
 	makeInterrupt21();
 	makeTimerInterrupt();
+	initializeProcStructures();
 	
 	//printString("WELCOME TO THE HYDRAS OS\r\n\0");
 	//printString("Type help for guidance.\r\n\0");
 
 
-	interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
+	interrupt(0x21, 0x04, "shell\0", 0, 0);
+	//interrupt(0x21, 0x04, "txtedt\0", 0, 0);
 	//interrupt(0x21, 0x00, "Done!\n\r\0", 0, 0);
 
 	
@@ -114,21 +116,29 @@ int executeProgram(char * filename) {
 	int i;
 	int j;
 	int segment;
+	int seg;
 	struct PCB *process;
 	char procname[7];
 	
-	printString("running a program\r\n\0");
+	printString("\r\nExecuting a program\r\n\0");
 	printString(filename);
+	printString("\r\n\0");
 
 	//Grab a free segment from memory
 	setKernelDataSegment();
-	segment = 0x1000*(getFreeMemorySegment()+2);
+	seg = getFreeMemorySegment();
+	segment = 0x1000*(seg+2);
 	restoreDataSegment();
 	//Read in the sector number of the program to be run
 	sector = readFile(filename, buffer);
 	//If the program was not found
 	if (sector < 0) { 
 		return -1; 
+	};
+	
+	//Put each bit of the program in memory starting at the memory segment returned.
+	for (i = 0; i < sector*512; i++) {
+		putInMemory(segment, 0x0000 + i, buffer[i]);
 	};
 	
 	//Grab a free process for the program.
@@ -139,21 +149,17 @@ int executeProgram(char * filename) {
 	if (process == NULL) {
 		return -2;
 	};
-	//printString("Found process");
 	//Set the name to the filename
 	kStrCopy(filename, process -> name, 6);
 	//Set segment to segment
+	setKernelDataSegment();
 	process -> segment = segment;
 	//Stack pointer to start of source
 	process -> stackPointer = 0xFF00;
 	//Add the process to the ready Queue;
-	setKernelDataSegment();
 	addToReady(process);
 	restoreDataSegment();
-	//Put each bit of the program in memory starting at the memory segment returned.
-	for (i = 0; i < sector*512; i++) {
-		putInMemory(segment, 0x000 + i, buffer[i]);
-	};
+
 	//Now, initialize the program.
 	initializeProgram(segment);
 	
@@ -366,33 +372,11 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 		return dir(bx);
 	};
 	
+	if (ax == 0x0A) {
+		return showProcesses();
+	};
+	
 	return -1;
-};
-
-void terminate() {
-
-	setKernelDataSegment();
-	releaseMemorySegment(running -> segment);
-	restoreDataSegment();
-
-	setKernelDataSegment();
-	releasePCB(running);
-	restoreDataSegment();
-
-	setKernelDataSegment();
-	running -> state = DEFUNCT;
-	restoreDataSegment();
-			
-	while(1) {};
-
-			
-		
-
-	
-	
-	//Need to free the memory segment the process was using,
-	//resetSegments();
-	//interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
 };
 
 int deleteFile(char *filename) {
@@ -686,62 +670,45 @@ int dir(char * directory) {
 
 void handleTimerInterrupt(int segment, int stackPointer) {
 
-	/*struct PCB * process;
+	struct PCB * process;
 	
-	//printString("timer interrupt");
 	setKernelDataSegment();
-	if (running == &idleProc) {
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		process = removeFromReady();
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		process -> state = READY;
-		restoreDataSegment();
-
-		setKernelDataSegment();
-		running = process;
-		restoreDataSegment();
-		
+	
+	running -> segment = segment;
+	running -> stackPointer = stackPointer;
+	running -> state = READY;
+	addToReady(running);
+	
+	process = removeFromReady();
+	if (process == NULL) {
+		running = &idleProc;
 	} else {
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		running -> segment = segment;
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		running -> stackPointer = stackPointer;
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		running -> state = READY;
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		addToReady(running);
-		restoreDataSegment();
-
-		setKernelDataSegment();
-		process = removeFromReady();
-		restoreDataSegment();
-		
-		setKernelDataSegment();
-		process -> state = READY;
-		restoreDataSegment();
-
-		setKernelDataSegment();
+		process -> state = RUNNING;
 		running = process;
-		restoreDataSegment();
-	
-	}
-	
-	//Call the kernel.asm returnFromTimer*/
+	};
 	returnFromTimer(running -> segment, running -> stackPointer);
+	restoreDataSegment();
+	
 
 }
+
+void terminate() {
+
+	setKernelDataSegment();
+	releaseMemorySegment((running -> segment)/0x1000 - 2);
+	restoreDataSegment();
+
+	setKernelDataSegment();
+	releasePCB(running);
+	restoreDataSegment();
+
+	setKernelDataSegment();
+	running -> state = DEFUNCT;
+	restoreDataSegment();
+			
+	while(1) {};
+
+};
 
 void kStrCopy(char *src, char *dest, int len) {
 	int i=0;
@@ -753,11 +720,33 @@ void kStrCopy(char *src, char *dest, int len) {
 	}
 }
 
+void yield() {
 
+	setKernelDataSegment();
+	addToReady(running);
+	restoreDataSegment();
+	
+};
 
+void showProcesses() {
+	
+	struct PCB * process;
+	setKernelDataSegment();
+	process = readyHead;
+	
+	printString(process -> name);
 
-
-
+	while (process -> next != NULL) {
+		printString(process -> name);
+		process = process -> next;
+	};
+	
+	printString("\r\n\0");
+	
+	restoreDataSegment();
+	
+};
+	
 
 
 

@@ -1,5 +1,4 @@
 main() {
-	enableInterrupts();
 	while (1) {
 		char buf[512];
 		char file_contents[13000];
@@ -16,6 +15,8 @@ main() {
 		int countsource;
 		double sectdiv;
 		int blank;
+		
+		enableInterrupts();
 
 		for (blank = 0; blank < 76; blank ++) {
 			file_name[blank] = '\0';
@@ -110,6 +111,9 @@ main() {
 			print("Enter copy <source filename> <destination filename> to copy a file. \r\n\0");
 			print("Enter delete <filename> to delete a file. \r\n\0");
 			print("In version 0.5, we will implement processes explicitly. \r\n\0");
+		
+		} else if (strCmp(buf, "ps\0", 2)) {
+			showProcesses();
 		
 		} else {
 			print("\n\r\0");

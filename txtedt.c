@@ -7,6 +7,8 @@ main()
 	int sectors;
 	int numchars;
 	int bufferchars;
+	
+	enableInterrupts();
 
 	numchars = 0;
 
