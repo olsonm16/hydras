@@ -6,7 +6,7 @@ int execute(char *fname);
 int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
-void terminate();
+void terminate(char * procname);
 
 int strCmp(char * a, char * b, int len) {
 	int i;
@@ -22,8 +22,8 @@ int print(char *str) {
 	return interrupt(0x21, 0x00, str, 0, 0);
 };
 
-int read(char *buf) {
-	return interrupt(0x21, 0x01, buf, 0, 0);
+int read(char *buf, int max) {
+	return interrupt(0x21, 0x01, buf, max, 0);
 };
 
 int readFile(char *fname, char *buf) {
@@ -46,7 +46,7 @@ int dir(char * directory) {
 	return interrupt(0x21, 0x09, directory, 0, 0);
 };
 
-void terminate() {
+void terminate(char * procname) {
 	return interrupt(0x21, 0x05, 0, 0, 0);
 };
 

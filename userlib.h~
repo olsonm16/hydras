@@ -4,7 +4,6 @@
 int strCmp(char * a, char * b, int len);
 int print(char *str);
 int read(char *buf);
-int txtedit(char *buf);
 int readFile(char *fname, char *buf);
 int execute(char *fname);
 int delete(char *fname);

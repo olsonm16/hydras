@@ -3,6 +3,9 @@ Mitch Olson
 CS 330 OS Project 5
 */
 
+#define MAIN
+#include "proc.h"
+
 void putChar(char ch, int color, int row, int column);
 void putStr(char * string, int color, int row, int column);
 int printString(char * string);
@@ -14,8 +17,8 @@ int handleInterrupt21(int ax, int bx, int cx, int dx);
 int readFile(char *filename, char *buf);
 int strCmp(char * a, char * b, int len);
 int printInt(int integer);
-int executeProgram(char * name, int segment);
-void terminate();
+int executeProgram(char * filename);
+void terminate(char * procname);
 int deleteFile(char *filename);
 int findSectors(int numSectors, int * sectors);
 int freeSectors();
@@ -29,13 +32,14 @@ Main just runs our shell function using an interrupt.
 */
 int main() {
 
-	//char largeFile[2048];
-
+	
+	initializeProcStructures();
 	
 	makeInterrupt21();
-	//makeTimerInterrupt();
-
-	//writeFile(largeFile, 4);
+	makeTimerInterrupt();
+	
+	printString("WELCOME TO THE HYDRAS OS\r\n\0");
+	printString("Type help for guidance.\r\n\0");
 
 
 	interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
@@ -94,37 +98,63 @@ int strCmp(char * a, char * b, int len) {
 }
 
 /*
-executeProgram takes a file name and segment.
-The segment is checked to ensure it is a multiple of 0x1000 and not 0x1000 itself or beyond 0xA000.
-If the segment is not in those restrictions, -2 is returned.
-Otherwise, file name is read into a buffer using readfile.
+executeProgram takes a file name.
+A free segment is retrieved from the proc.c class.
+File name is read into a buffer using readfile.
 If the file is not found, -2 is returned.
 Otherwise, the file is put in memory at the segment location, character by character.
 Then, the program is launched using the kernel command, and 0 is returned.
 */
 
-int executeProgram(char * name, int segment) {
+int executeProgram(char * filename) {
 
 	char buffer[13312];
 	int sector;
 	int i;
-	
-	if (mod(segment, 0x1000) != 0) { return -2;};
+	int j;
+	int segment;
+	struct PCB *process;
+	char procname[7];
 
-	if (segment == 0x1000) {return -2;};
-	if (segment >= 0xA000) {return -2;};
+	//Grab a free segment from memory
+	setKernelDataSegment();
+	segment = 0x1000*(getFreeMemorySegment()+2);
+	restoreDataSegment();
+	//Read in the sector number of the program to be run
+	sector = readFile(filename, buffer);
+	//If the program was not found
+	if (sector < 0) { 
+		return -1; 
+	};
 	
-	sector = readFile(name, buffer);
-	
-	if (sector < 0) { return -2; };
-	
+	//Grab a free process for the program.
+	setKernelDataSegment();
+	process = getFreePCB();
+	restoreDataSegment();
+	//If there are no free processes, return -2
+	if (process == NULL) {
+		return -2;
+	};
+	//Set the name to the filename
+	for (j = 0; j < 7; j++) {
+		process -> name[j] = filename[j];
+	};
+	//Set segment to segment
+	process -> segment = segment;
+	//Stack pointer to start of source
+	process -> stackPointer = 0xFF00;
+	//Add the process to the ready Queue;
+	setKernelDataSegment();
+	addToReady(process);
+	restoreDataSegment();
+	//Put each bit of the program in memory starting at the memory segment returned.
 	for (i = 0; i < sector*512; i++) {
 		putInMemory(segment, 0x000 + i, buffer[i]);
 	};
+	//Now, initialize the program.
+	initializeProgram(segment);
 	
-	launchProgram(segment);
-	
-	return 0;
+	return 1;
 }
 
 // Prints out a given integer to the screen at current position
@@ -313,11 +343,11 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	};
 	
 	if (ax == 0x04) {
-		return executeProgram(bx, cx);
+		return executeProgram(bx);
 	};
 	
 	if (ax == 0x05) {
-		terminate();
+		terminate(cx);
 		return 0;
 	};
 
@@ -336,9 +366,24 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	return -1;
 };
 
-void terminate() {
-	resetSegments();
-	interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
+void terminate(char * procname) {
+
+	int i;
+
+	for (i = 0; i < 8; i++) {
+		if (pcbPool[i].name == procname) {
+			releaseMemorySegment(pcbPool[i].segment);
+			releasePCB(&pcbPool[i]);
+			pcbPool[i].state = DEFUNCT;
+		};
+	};
+	while(1) {};
+
+	
+	
+	//Need to free the memory segment the process was using,
+	//resetSegments();
+	//interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
 };
 
 int deleteFile(char *filename) {
@@ -600,7 +645,9 @@ int dir(char * directory) {
 	count = 0;
 
 	directory[count] = '\r';
+	count++;
 	directory[count] = '\n';
+	count++;
 
 	for (i = 0; i < 512; i += 32) {
 		if (disk_directory[i] != '\0') {
@@ -630,9 +677,41 @@ int dir(char * directory) {
 
 void handleTimerInterrupt(int segment, int stackPointer) {
 
-	// Want to print a message
-	printString("message\0");
-	//and then call the kernel.asm returnFromTimer
+	struct PCB * process;
+	
+	if (running == &idleProc) {
+		setKernelDataSegment();
+		process = removeFromReady();
+		restoreDataSegment();
+
+		process -> state = READY;
+
+		setKernelDataSegment();
+		running = process;
+		restoreDataSegment();
+	} else {
+
+		running -> segment = segment;
+		running -> stackPointer = stackPointer;
+		running -> state = READY;
+		
+		setKernelDataSegment();
+		addToReady(running);
+		restoreDataSegment();
+
+		setKernelDataSegment();
+		process = removeFromReady();
+		restoreDataSegment();
+
+		process -> state = READY;
+
+		setKernelDataSegment();
+		running = process;
+		restoreDataSegment();
+	
+	}
+	
+	//Call the kernel.asm returnFromTimer*/
 	returnFromTimer(segment, stackPointer);
 
 }

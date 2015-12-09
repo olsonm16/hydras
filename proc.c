@@ -1,5 +1,6 @@
 #include "proc.h"
 #include <stdio.h>
+#include <string.h>
 
 /*
  * This function initializes all of the global variables and 
@@ -81,13 +82,14 @@ struct PCB *getFreePCB() {
 
 	int i;
   
-    for(i=0; i<8; i++) {
-        pcbPool[i].name[0] = 0x00;
-        if (pcbPool[i].state == DEFUNCT) {
-        	return &pcbPool[i];
-		};
-    }
-    return NULL;
+	for(i=0; i<8; i++) {
+        	//pcbPool[i].name[0] = 0x00;
+		if (pcbPool[i].state == DEFUNCT) {
+			pcbPool[i].state = STARTING;
+        		return &pcbPool[i];
+			};
+    	}
+	return NULL;
 }
 
 /*
@@ -99,6 +101,19 @@ void releasePCB(struct PCB *pcb) {
 
 	pcb -> name[0] = 0x00;
 	pcb -> state = DEFUNCT;
+	//PCB is in the middle
+	if (pcb -> next != NULL && pcb -> prev != NULL) {
+		pcb -> next -> prev = pcb -> prev;
+		pcb -> prev -> next = pcb -> next;
+	} else if (pcb -> next != NULL) {
+		//pcb is the ready head
+		readyHead = pcb -> next;
+		readyHead -> prev = NULL;
+	} else if (pcb -> prev != NULL) {
+		//pcb is the tail
+		readyTail = pcb -> prev;
+		readyTail -> next = NULL;
+	}
 	pcb -> next = NULL;
 	pcb -> prev = NULL;
 }

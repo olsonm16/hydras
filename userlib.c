@@ -6,7 +6,7 @@ int execute(char *fname);
 int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
-void terminate();
+void terminate(char * procname);
 
 int strCmp(char * a, char * b, int len) {
 	int i;
@@ -46,8 +46,8 @@ int dir(char * directory) {
 	return interrupt(0x21, 0x09, directory, 0, 0);
 };
 
-void terminate() {
-	return interrupt(0x21, 0x05, 0, 0, 0);
+void terminate(char * procname) {
+	return interrupt(0x21, 0x05, procname, 0, 0);
 };
 
 
