@@ -10,6 +10,8 @@ int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
 void terminate();
+void yield();
 void showProcesses();
+int kill(int pid);
 
 #endif

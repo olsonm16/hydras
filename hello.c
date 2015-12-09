@@ -6,7 +6,7 @@ main() {
 	enableInterrupts();
 	
 	for(i=0; i<1000; i++) {
-		print("\0");
+		print("Hello\0");
 		for (j=0; j<10000; j++) {
 			for (k=0; k<1000; k++) {
 			}

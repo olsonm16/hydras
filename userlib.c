@@ -7,7 +7,9 @@ int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
 void terminate();
+void yield();
 void showProcesses();
+int kill(int pid);
 
 int strCmp(char * a, char * b, int len) {
 	int i;
@@ -53,6 +55,14 @@ void terminate() {
 
 void showProcesses() {
 	return interrupt(0x21, 0x0A, 0, 0, 0);
+};
+
+void yield() {
+	return interrupt(0x21, 0x0C, 0, 0, 0);
+};
+
+int kill(int pid) {
+	return interrupt(0x21, 0x0B, pid, 0, 0);
 };
 
 

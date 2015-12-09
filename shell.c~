@@ -15,6 +15,10 @@ main() {
 		int countsource;
 		double sectdiv;
 		int blank;
+		int pid;
+		int p;
+		
+		enableInterrupts();
 
 		for (blank = 0; blank < 76; blank ++) {
 			file_name[blank] = '\0';
@@ -43,15 +47,16 @@ main() {
 		} else if (strCmp(buf, "execute\0", 7)) {
 			print("\n\r\0");
 			result = execute(buf + 8);
+			yield();
 			if (result < 0) {
 				print("\n\r\0");
 				print("Bad file name\r\n");
 			}
 		} else if (strCmp(buf, "dir\0", 3)) {
 			result = dir(directory);
-			print("\r\n\0");
+			//print("\r\n\0");
 			//print(directory);
-			print("\r\n\0");
+			//print("\r\n\0");
 
 		} else if (strCmp(buf, "delete\0", 6)) {
 			result = delete(buf + 7);
@@ -99,6 +104,29 @@ main() {
 					print("\r\nFile copied\r\n\0");
 				}
 			}
+		} else if (strCmp(buf, "help\0", 4)) {
+			print("\r\nHydras is a basic OS that can do a few things for you. \r\n\0");
+			print("The current implementation (Version 0.4) can work with files. \r\n\0");
+			print("To see the files you have on the disk, type dir. \r\n\0");
+			print("To view the contents of a file, enter type <filename> (no braces). \r\n\0");
+			print("To execute a program, type execute <progname>. \r\n\0");
+			print("One such program is txtedt. You may create and save a txt file using txtedt. \r\n\0");
+			print("Enter copy <source filename> <destination filename> to copy a file. \r\n\0");
+			print("Enter delete <filename> to delete a file. \r\n\0");
+			print("In version 0.5, we will implement processes explicitly. \r\n\0");
+		
+		} else if (strCmp(buf, "ps\0", 2)) {
+			showProcesses();
+		
+		} else if (strCmp(buf, "kill\0", 4)) {
+			pid = buf[5] - '0';
+			result = kill(pid);
+			if (result < 0) {
+				print("\r\nNo process with that segment found to kill \r\n\0");
+			} else {
+				print("\r\nProcess killed\r\n\0");
+			};
+		
 		} else {
 			print("\n\r\0");
 			print("Unrecognized command.\r\n\0");

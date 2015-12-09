@@ -15,6 +15,8 @@ main() {
 		int countsource;
 		double sectdiv;
 		int blank;
+		int pid;
+		int p;
 		
 		enableInterrupts();
 
@@ -114,6 +116,15 @@ main() {
 		
 		} else if (strCmp(buf, "ps\0", 2)) {
 			showProcesses();
+		
+		} else if (strCmp(buf, "kill\0", 4)) {
+			pid = buf[5] - '0';
+			result = kill(pid);
+			if (result < 0) {
+				print("\r\nNo process with that segment found to kill \r\n\0");
+			} else {
+				print("\r\nProcess killed\r\n\0");
+			};
 		
 		} else {
 			print("\n\r\0");

@@ -28,6 +28,7 @@ void handleTimerInterrupt(int segment, int stackPointer);
 void kStrCopy(char *src, char *dest, int len);
 void yield();
 void showProcesses();
+int kill(int segment);
 
 
 /*
@@ -374,6 +375,14 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	
 	if (ax == 0x0A) {
 		return showProcesses();
+	};
+
+	if (ax == 0x0B) {
+		return kill(bx);
+	};
+
+	if (ax == 0x0C) {
+		return yield();
 	};
 	
 	return -1;
@@ -730,28 +739,50 @@ void yield() {
 
 void showProcesses() {
 	
-	struct PCB * process;
+	int i;
+	
 	setKernelDataSegment();
-	process = readyHead;
-	
-	printString(process -> name);
 
-	while (process -> next != NULL) {
-		printString(process -> name);
-		process = process -> next;
-	};
-	
 	printString("\r\n\0");
+
+	for (i=0; i<8; i++) {
+		if (pcbPool[i].name[0] != 0x00) {
+			printString(pcbPool[i].name);
+			printString("\t");
+			printInt((pcbPool[i].segment)/(0x1000) - 2);
+			printString("\r\n\0");
+		
+		};
+	};
 	
 	restoreDataSegment();
 	
 };
+
+int kill(int segment) {
+
+	int segAddr;
+	int i;
+
+	segAddr = (segment + 2)*0x1000;
+
+	setKernelDataSegment();
+
+	for (i=0; i<8; i++) {
+		if (pcbPool[i].segment == segAddr) {
+			releaseMemorySegment(segAddr);
+			releasePCB(&pcbPool[i]);
+			pcbPool[i].state = DEFUNCT;
+			restoreDataSegment();
+			return 1;
+		};
+	};
+
+	restoreDataSegment();	
 	
+	return -1;
 
-
-
-
-
+}
 	
 	
 
