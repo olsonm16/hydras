@@ -1,6 +1,6 @@
 00000000000i[     ] Bochs x86 Emulator 2.6
 00000000000i[     ]   Built from SVN snapshot on September 2nd, 2012
-00000000000i[     ] Compiled on Oct 14 2015 at 15:10:52
+00000000000i[     ] Compiled on Oct  7 2015 at 17:58:54
 00000000000i[     ] System configuration
 00000000000i[     ]   processors: 1 (cores=1, HT threads=1)
 00000000000i[     ]   A20 line support: yes
@@ -30,14 +30,14 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support: vbe 
-00000000000i[MEM0 ] allocated memory at 0x7f422227d010. after alignment, vector=0x7f422227e000
+00000000000i[MEM0 ] allocated memory at 0x7fcd21594010. after alignment, vector=0x7fcd21595000
 00000000000i[MEM0 ] 32.00MB
 00000000000i[MEM0 ] mem block size = 0x00100000, blocks=32
-00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
+00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/home/students/molson/Desktop/cs330/OSProject/bochs-2.6/bios/BIOS-bochs-latest')
 00000000000e[DEV  ] Bochs is not compiled with PCI support
 00000000000i[     ] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Tue Dec  8 18:04:52 2015 (time0=1449615892)
+00000000000i[CMOS ] Setting initial clock to: Wed Dec  9 12:00:27 2015 (time0=1449680427)
 00000000000i[     ] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[     ] init_dev of 'pic' plugin device by virtual method
@@ -52,7 +52,7 @@
 00000000000i[BXVGA] VBE Bochs Display Extension Enabled
 00000000000i[XGUI ] test_alloc_colors: 16 colors available out of 16 colors tried
 00000000000i[XGUI ] font 8 wide x 16 high, display depth = 24
-00000000000i[MEM0 ] rom at 0xc0000/41472 ('/usr/local/share/bochs/VGABIOS-lgpl-latest')
+00000000000i[MEM0 ] rom at 0xc0000/41472 ('/home/students/molson/Desktop/cs330/OSProject/bochs-2.6/bios/VGABIOS-lgpl-latest')
 00000000000i[     ] init_dev of 'ioapic' plugin device by virtual method
 00000000000i[IOAP ] initializing I/O APIC
 00000000000i[MEM0 ] Register memory access handlers: 0x00000000fec00000 - 0x00000000fec00fff
@@ -133,26 +133,32 @@
 00000590464i[VBIOS] VBE Bios $Id: vbe.c,v 1.64 2011/07/19 18:25:05 vruppert Exp $
 00001000003i[XGUI ] charmap update. Font Height is 16
 00031216657i[BIOS ] Booting from 0000:7c00
-00125710000i[     ] cpu loop quit, shutting down simulator
-00125710000i[CPU0 ] CPU is in real mode (active)
-00125710000i[CPU0 ] CS.mode = 16 bit
-00125710000i[CPU0 ] SS.mode = 16 bit
-00125710000i[CPU0 ] EFER   = 0x00000000
-00125710000i[CPU0 ] | EAX=00000001  EBX=00001385  ECX=00092000  EDX=00000000
-00125710000i[CPU0 ] | ESP=0000ffea  EBP=0000ffee  ESI=000e125a  EDI=0000ffac
-00125710000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df IF tf SF zf af pf cf
-00125710000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00125710000i[CPU0 ] |  CS:1000( 0004| 0|  0) 00010000 0000ffff 0 0
-00125710000i[CPU0 ] |  DS:1000( 0005| 0|  0) 00010000 0000ffff 0 0
-00125710000i[CPU0 ] |  SS:1000( 0005| 0|  0) 00010000 0000ffff 0 0
-00125710000i[CPU0 ] |  ES:1000( 0005| 0|  0) 00010000 0000ffff 0 0
-00125710000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00125710000i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00125710000i[CPU0 ] | EIP=00000039 (00000039)
-00125710000i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
-00125710000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
-00125710000i[CPU0 ] 0x00000039>> jmp .-2 (0x00010039) : EBFE
-00125710000i[CMOS ] Last time is 1449615904 (Tue Dec  8 18:05:04 2015)
-00125710000i[XGUI ] Exit
-00125710000i[     ] restoring default signal behavior
-00125710000i[CTRL ] quit_sim called with exit code 1
+00033545302i[MEM0 ] allocate_block: block=0x1 used 0x2 of 0x20
+00033547350e[CPU0 ] prefetch: EIP [00010000] > CS.limit [0000ffff]
+00033549803e[CPU0 ] prefetch: EIP [00010000] > CS.limit [0000ffff]
+00033550222i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
+00033550223i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
+00033568656e[CPU0 ] prefetch: EIP [00010000] > CS.limit [0000ffff]
+00190420000i[     ] cpu loop quit, shutting down simulator
+00190420000i[CPU0 ] CPU is in real mode (active)
+00190420000i[CPU0 ] CS.mode = 16 bit
+00190420000i[CPU0 ] SS.mode = 16 bit
+00190420000i[CPU0 ] EFER   = 0x00000000
+00190420000i[CPU0 ] | EAX=000003d0  EBX=00000090  ECX=00090200  EDX=00000000
+00190420000i[CPU0 ] | ESP=0000c948  EBP=0000c94c  ESI=000e11be  EDI=0000ff53
+00190420000i[CPU0 ] | IOPL=3 id vip vif ac vm rf NT of DF if tf SF zf af PF cf
+00190420000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+00190420000i[CPU0 ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
+00190420000i[CPU0 ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
+00190420000i[CPU0 ] |  SS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00190420000i[CPU0 ] |  ES:ff53( 0005| 0|  0) 000ff530 0000ffff 0 0
+00190420000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00190420000i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00190420000i[CPU0 ] | EIP=00007aca (00007aca)
+00190420000i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
+00190420000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
+00190420000i[CPU0 ] 0x00007aca>> and al, 0xc0 : 24C0
+00190420000i[CMOS ] Last time is 1449680446 (Wed Dec  9 12:00:46 2015)
+00190420000i[XGUI ] Exit
+00190420000i[     ] restoring default signal behavior
+00190420000i[CTRL ] quit_sim called with exit code 1

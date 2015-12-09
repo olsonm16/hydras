@@ -18,13 +18,14 @@ int readFile(char *filename, char *buf);
 int strCmp(char * a, char * b, int len);
 int printInt(int integer);
 int executeProgram(char * filename);
-void terminate(char * procname);
+void terminate(c);
 int deleteFile(char *filename);
 int findSectors(int numSectors, int * sectors);
 int freeSectors();
 int writeFile(char *fname, char *buffer, int sectors); 
 int dir(char * directory);
 void handleTimerInterrupt(int segment, int stackPointer);
+void kStrCopy(char *src, char *dest, int len);
 
 
 /*
@@ -38,8 +39,8 @@ int main() {
 	makeInterrupt21();
 	makeTimerInterrupt();
 	
-	printString("WELCOME TO THE HYDRAS OS\r\n\0");
-	printString("Type help for guidance.\r\n\0");
+	//printString("WELCOME TO THE HYDRAS OS\r\n\0");
+	//printString("Type help for guidance.\r\n\0");
 
 
 	interrupt(0x21, 0x04, "shell\0", 0x2000, 0);
@@ -115,6 +116,9 @@ int executeProgram(char * filename) {
 	int segment;
 	struct PCB *process;
 	char procname[7];
+	
+	printString("running a program\r\n\0");
+	printString(filename);
 
 	//Grab a free segment from memory
 	setKernelDataSegment();
@@ -135,10 +139,9 @@ int executeProgram(char * filename) {
 	if (process == NULL) {
 		return -2;
 	};
+	//printString("Found process");
 	//Set the name to the filename
-	for (j = 0; j < 7; j++) {
-		process -> name[j] = filename[j];
-	};
+	kStrCopy(filename, process -> name, 6);
 	//Set segment to segment
 	process -> segment = segment;
 	//Stack pointer to start of source
@@ -347,7 +350,7 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	};
 	
 	if (ax == 0x05) {
-		terminate(cx);
+		terminate();
 		return 0;
 	};
 
@@ -366,28 +369,20 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	return -1;
 };
 
-void terminate(char * procname) {
+void terminate() {
 
-	int i;
+	setKernelDataSegment();
+	releaseMemorySegment(running -> segment);
+	restoreDataSegment();
 
-	for (i = 0; i < 8; i++) {
-		setKernelDataSegment();
-		if (pcbPool[i].name == procname) {
-			setKernelDataSegment();
-			releaseMemorySegment(pcbPool[i].segment);
-			restoreDataSegment();
+	setKernelDataSegment();
+	releasePCB(running);
+	restoreDataSegment();
 
-			setKernelDataSegment();
-			releasePCB(&pcbPool[i]);
-			restoreDataSegment();
-
-			setKernelDataSegment();
-			pcbPool[i].state = DEFUNCT;
-			restoreDataSegment();
-		};
-		restoreDataSegment();
-	};
-
+	setKernelDataSegment();
+	running -> state = DEFUNCT;
+	restoreDataSegment();
+			
 	while(1) {};
 
 			
@@ -691,23 +686,39 @@ int dir(char * directory) {
 
 void handleTimerInterrupt(int segment, int stackPointer) {
 
-	struct PCB * process;
+	/*struct PCB * process;
 	
+	//printString("timer interrupt");
+	setKernelDataSegment();
 	if (running == &idleProc) {
+		restoreDataSegment();
+		
 		setKernelDataSegment();
 		process = removeFromReady();
 		restoreDataSegment();
-
+		
+		setKernelDataSegment();
 		process -> state = READY;
+		restoreDataSegment();
 
 		setKernelDataSegment();
 		running = process;
 		restoreDataSegment();
+		
 	} else {
-
+		restoreDataSegment();
+		
+		setKernelDataSegment();
 		running -> segment = segment;
+		restoreDataSegment();
+		
+		setKernelDataSegment();
 		running -> stackPointer = stackPointer;
+		restoreDataSegment();
+		
+		setKernelDataSegment();
 		running -> state = READY;
+		restoreDataSegment();
 		
 		setKernelDataSegment();
 		addToReady(running);
@@ -716,8 +727,10 @@ void handleTimerInterrupt(int segment, int stackPointer) {
 		setKernelDataSegment();
 		process = removeFromReady();
 		restoreDataSegment();
-
+		
+		setKernelDataSegment();
 		process -> state = READY;
+		restoreDataSegment();
 
 		setKernelDataSegment();
 		running = process;
@@ -726,10 +739,19 @@ void handleTimerInterrupt(int segment, int stackPointer) {
 	}
 	
 	//Call the kernel.asm returnFromTimer*/
-	returnFromTimer(segment, stackPointer);
+	returnFromTimer(running -> segment, running -> stackPointer);
 
 }
 
+void kStrCopy(char *src, char *dest, int len) {
+	int i=0;
+	for (i=0; i<len; i++) {
+		putInMemory(0x1000, dest+i, src[i]);
+		if (src[i] == 0x00) {
+			return;
+		}
+	}
+}
 
 
 

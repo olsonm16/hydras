@@ -33,6 +33,6 @@ main()
 
 	write(filename, fileToSave, sectors);
 		
-	terminate("txtedt\0");
+	terminate();
 }
 	

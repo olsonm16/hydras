@@ -1,4 +1,5 @@
 main() {
+	enableInterrupts();
 	while (1) {
 		char buf[512];
 		char file_contents[13000];

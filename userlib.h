@@ -9,6 +9,6 @@ int execute(char *fname);
 int delete(char *fname);
 int write(char *fname, char *buffer, int sectors);
 int dir(char * directory);
-void terminate(char * procname);
+void terminate();
 
 #endif
