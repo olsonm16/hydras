@@ -47,7 +47,6 @@ main() {
 		} else if (strCmp(buf, "execute\0", 7)) {
 			print("\n\r\0");
 			result = execute(buf + 8);
-			yield();
 			if (result < 0) {
 				print("\n\r\0");
 				print("Bad file name\r\n");

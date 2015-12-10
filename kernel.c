@@ -124,6 +124,9 @@ int executeProgram(char * filename) {
 	//Grab a free segment from memory
 	setKernelDataSegment();
 	seg = getFreeMemorySegment();
+	if (seg < 0) {
+		return -2;
+	};
 	segment = 0x1000*(seg+2);
 	restoreDataSegment();
 	//Read in the sector number of the program to be run
@@ -766,7 +769,7 @@ int kill(int segment) {
 
 	for (i=0; i<8; i++) {
 		if (pcbPool[i].segment == segAddr) {
-			releaseMemorySegment(segAddr);
+			releaseMemorySegment(segment);
 			releasePCB(&pcbPool[i]);
 			pcbPool[i].state = DEFUNCT;
 			restoreDataSegment();

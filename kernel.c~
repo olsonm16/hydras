@@ -120,14 +120,13 @@ int executeProgram(char * filename) {
 	int seg;
 	struct PCB *process;
 	char procname[7];
-	
-	printString("\r\nExecuting a program\r\n\0");
-	printString(filename);
-	printString("\r\n\0");
 
 	//Grab a free segment from memory
 	setKernelDataSegment();
 	seg = getFreeMemorySegment();
+	if (seg == NULL) {
+		return -2;
+	};
 	segment = 0x1000*(seg+2);
 	restoreDataSegment();
 	//Read in the sector number of the program to be run
@@ -770,7 +769,7 @@ int kill(int segment) {
 
 	for (i=0; i<8; i++) {
 		if (pcbPool[i].segment == segAddr) {
-			releaseMemorySegment(segAddr);
+			releaseMemorySegment(segment);
 			releasePCB(&pcbPool[i]);
 			pcbPool[i].state = DEFUNCT;
 			restoreDataSegment();
