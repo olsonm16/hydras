@@ -770,8 +770,6 @@ int kill(int segment) {
 
 	for (i=0; i<8; i++) {
 		if (pcbPool[i].segment == segAddr) {
-			printString("Found matching PCB\r\n\0");
-			printString(pcbPool[i].name);
 			releaseMemorySegment(segAddr);
 			releasePCB(&pcbPool[i]);
 			pcbPool[i].state = DEFUNCT;

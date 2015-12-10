@@ -120,10 +120,6 @@ int executeProgram(char * filename) {
 	int seg;
 	struct PCB *process;
 	char procname[7];
-	
-	printString("\r\nExecuting a program\r\n\0");
-	printString(filename);
-	printString("\r\n\0");
 
 	//Grab a free segment from memory
 	setKernelDataSegment();
