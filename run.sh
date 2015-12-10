@@ -27,7 +27,7 @@ bcc -ansi -c -o userlib.o userlib.c
 
 as86 lib.asm -o lib.o
 
-for prog in shell txtedt uprog2 hello bye hello5
+for prog in shell txtedt uprog2 hello bye hello5 bye5
      do
          echo $prog
          makeScript $prog # use of above function

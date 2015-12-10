@@ -30,14 +30,14 @@
 00000000000i[     ]   SB16 support: no
 00000000000i[     ]   USB support: no
 00000000000i[     ]   VGA extension support: vbe 
-00000000000i[MEM0 ] allocated memory at 0x7f25a7007010. after alignment, vector=0x7f25a7008000
+00000000000i[MEM0 ] allocated memory at 0x7f29251e0010. after alignment, vector=0x7f29251e1000
 00000000000i[MEM0 ] 32.00MB
 00000000000i[MEM0 ] mem block size = 0x00100000, blocks=32
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('/usr/local/share/bochs/BIOS-bochs-latest')
 00000000000e[DEV  ] Bochs is not compiled with PCI support
 00000000000i[     ] init_dev of 'cmos' plugin device by virtual method
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Wed Dec  9 21:03:45 2015 (time0=1449713025)
+00000000000i[CMOS ] Setting initial clock to: Wed Dec  9 21:25:39 2015 (time0=1449714339)
 00000000000i[     ] init_dev of 'dma' plugin device by virtual method
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[     ] init_dev of 'pic' plugin device by virtual method
@@ -133,48 +133,26 @@
 00000590464i[VBIOS] VBE Bios $Id: vbe.c,v 1.64 2011/07/19 18:25:05 vruppert Exp $
 00001000003i[XGUI ] charmap update. Font Height is 16
 00031216657i[BIOS ] Booting from 0000:7c00
-02382041260i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02382041264i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02403578400i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02428294850i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02452275637i[BIOS ] KBD: int09h_handler(): scancode & asciicode are zero?
-02455757570i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02480474020i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02505190470i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02527485637i[BIOS ] KBD: int09h_handler(): scancode & asciicode are zero?
-02532653200i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02557369650i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02582086100i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02609548820i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02615115637i[BIOS ] KBD: int09h_handler(): scancode & asciicode are zero?
-02620995637i[BIOS ] KBD: int09h_handler(): scancode & asciicode are zero?
-02627375637i[BIOS ] KBD: int09h_handler(): scancode & asciicode are zero?
-02634265270i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02658981730i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02686444450i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02711160900i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02735877350i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02760593800i[CPU0 ] LOCK prefix unallowed (op1=0x53, modrm=0x00)
-02765200000i[     ] cpu loop quit, shutting down simulator
-02765200000i[CPU0 ] CPU is in real mode (active)
-02765200000i[CPU0 ] CS.mode = 16 bit
-02765200000i[CPU0 ] SS.mode = 16 bit
-02765200000i[CPU0 ] EFER   = 0x00000000
-02765200000i[CPU0 ] | EAX=00000000  EBX=0000d480  ECX=00090004  EDX=00000000
-02765200000i[CPU0 ] | ESP=0000c6a8  EBP=0000c6b8  ESI=000e139a  EDI=00000000
-02765200000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
-02765200000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-02765200000i[CPU0 ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
-02765200000i[CPU0 ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
-02765200000i[CPU0 ] |  SS:2000( 0005| 0|  0) 00020000 0000ffff 0 0
-02765200000i[CPU0 ] |  ES:2000( 0005| 0|  0) 00020000 0000ffff 0 0
-02765200000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-02765200000i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-02765200000i[CPU0 ] | EIP=00000646 (00000646)
-02765200000i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
-02765200000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
-02765200000i[CPU0 ] 0x00000646>> ret  : C3
-02765200000i[CMOS ] Last time is 1449713301 (Wed Dec  9 21:08:21 2015)
-02765200000i[XGUI ] Exit
-02765200000i[     ] restoring default signal behavior
-02765200000i[CTRL ] quit_sim called with exit code 1
+03477690000i[     ] cpu loop quit, shutting down simulator
+03477690000i[CPU0 ] CPU is in real mode (active)
+03477690000i[CPU0 ] CS.mode = 16 bit
+03477690000i[CPU0 ] SS.mode = 16 bit
+03477690000i[CPU0 ] EFER   = 0x00000000
+03477690000i[CPU0 ] | EAX=00000028  EBX=00000000  ECX=00090000  EDX=00000000
+03477690000i[CPU0 ] | ESP=0000c6d0  EBP=0000c6ea  ESI=000e139a  EDI=00000000
+03477690000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+03477690000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+03477690000i[CPU0 ] |  CS:f000( 0004| 0|  0) 000f0000 0000ffff 0 0
+03477690000i[CPU0 ] |  DS:0040( 0005| 0|  0) 00000400 0000ffff 0 0
+03477690000i[CPU0 ] |  SS:2000( 0005| 0|  0) 00020000 0000ffff 0 0
+03477690000i[CPU0 ] |  ES:2000( 0005| 0|  0) 00020000 0000ffff 0 0
+03477690000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+03477690000i[CPU0 ] |  GS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+03477690000i[CPU0 ] | EIP=0000e86a (0000e86a)
+03477690000i[CPU0 ] | CR0=0x60000010 CR2=0x00000000
+03477690000i[CPU0 ] | CR3=0x00000000 CR4=0x00000000
+03477690000i[CPU0 ] 0x0000e86a>> mov ax, word ptr ds:0x1a : A11A00
+03477690000i[CMOS ] Last time is 1449714686 (Wed Dec  9 21:31:26 2015)
+03477690000i[XGUI ] Exit
+03477690000i[     ] restoring default signal behavior
+03477690000i[CTRL ] quit_sim called with exit code 1
