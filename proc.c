@@ -153,7 +153,7 @@ void addToReady(struct PCB *pcb) {
 /*
  * Remove the PCB at the head of the ready queue and return a 
  * pointer to it.
- */
+ 
 struct PCB *removeFromReady() {
 	
 	struct PCB *head;
@@ -173,6 +173,49 @@ struct PCB *removeFromReady() {
 	}
 
 	return NULL;
+}
+*/
+struct PCB *removeFromReady() {
+	
+	struct PCB *head;
+
+	//If we had nothing in the head, return NULL.
+	if (readyHead == NULL) {
+		return NULL;
+	//Otherwise, if we have one PCB in the queue, we want to return it
+	} else if (readyHead == readyTail) {
+		head = readyHead;
+		//head -> next = NULL;
+		//head -> prev = NULL;
+		//And we want both the head and tail to now be null.
+		readyHead = NULL;
+		readyTail = NULL;
+	//Otherwise, we have two PCBs in the queue...	
+	} else if (readyHead -> next == readyTail) {
+		//We want to remove the head, so let's save it first.
+		head = readyHead;
+		//head -> next = NULL;
+		//head -> prev = NULL;
+		//Now we need to let the one remaining element be the head and tail.
+		readyHead = readyTail;
+		//And we want those guys to point to NULL.
+		readyHead -> next = NULL;
+		readyHead -> prev = NULL;
+		readyTail -> next = NULL;
+		readyTail -> prev = NULL;
+	//Otherwise, we have more than two PCBs in the queue.
+	} else {
+		//First let's save the head.
+		head = readyHead;
+		//head -> next = NULL;
+		//head -> prev = NULL;
+		//Now, we want the head to be what's next in the queue.
+		readyHead = head -> next;
+		//And we want the head to point back to NULL
+		readyHead -> prev = NULL;
+	};
+
+	return head;
 }
 
 

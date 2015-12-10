@@ -47,10 +47,13 @@ main() {
 		} else if (strCmp(buf, "execute\0", 7)) {
 			print("\n\r\0");
 			result = execute(buf + 8);
-			if (result < 0) {
+			if (result == -1) {
 				print("\n\r\0");
 				print("Bad file name\r\n");
-			}
+			} else if (result == -2) {
+				print("\n\r\0");
+				print("Out of suficient free memory/process blocks for you!\n\r\0");
+			};
 		} else if (strCmp(buf, "dir\0", 3)) {
 			result = dir(directory);
 			//print("\r\n\0");

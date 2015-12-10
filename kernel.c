@@ -115,20 +115,23 @@ int executeProgram(char * filename) {
 	struct PCB *process;
 	char procname[7];
 
-	//Grab a free segment from memory
-	setKernelDataSegment();
-	seg = getFreeMemorySegment();
-	if (seg < 0) {
-		return -2;
-	};
-	segment = 0x1000*(seg+2);
-	restoreDataSegment();
 	//Read in the sector number of the program to be run
 	sector = readFile(filename, buffer);
 	//If the program was not found
 	if (sector < 0) { 
 		return -1; 
 	};
+
+	//Grab a free segment from memory
+	setKernelDataSegment();
+	seg = getFreeMemorySegment();
+	restoreDataSegment();
+	if (seg < 0) {
+		//printString("Out of memory!\n");
+		return -2;
+	};
+	segment = 0x1000*(seg+2);
+	//restoreDataSegment();
 	
 	//Put each bit of the program in memory starting at the memory segment returned.
 	for (i = 0; i < sector*512; i++) {
