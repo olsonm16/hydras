@@ -124,7 +124,7 @@ int executeProgram(char * filename) {
 	//Grab a free segment from memory
 	setKernelDataSegment();
 	seg = getFreeMemorySegment();
-	if (seg == NULL) {
+	if (seg < 0) {
 		return -2;
 	};
 	segment = 0x1000*(seg+2);
@@ -684,8 +684,10 @@ void handleTimerInterrupt(int segment, int stackPointer) {
 	
 	running -> segment = segment;
 	running -> stackPointer = stackPointer;
-	running -> state = READY;
-	addToReady(running);
+	if ((running -> state != DEFUNCT) && (running -> name != "IDLE\0")) {
+		running -> state = READY;
+		addToReady(running);
+	};
 	
 	process = removeFromReady();
 	if (process == NULL) {

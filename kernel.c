@@ -40,14 +40,8 @@ int main() {
 	makeInterrupt21();
 	makeTimerInterrupt();
 	initializeProcStructures();
-	
-	//printString("WELCOME TO THE HYDRAS OS\r\n\0");
-	//printString("Type help for guidance.\r\n\0");
-
 
 	interrupt(0x21, 0x04, "shell\0", 0, 0);
-	//interrupt(0x21, 0x04, "txtedt\0", 0, 0);
-	//interrupt(0x21, 0x00, "Done!\n\r\0", 0, 0);
 
 	
 				
@@ -684,8 +678,10 @@ void handleTimerInterrupt(int segment, int stackPointer) {
 	
 	running -> segment = segment;
 	running -> stackPointer = stackPointer;
-	running -> state = READY;
-	addToReady(running);
+	if ((running -> state != DEFUNCT) && (running -> name != "IDLE\0")) {
+		running -> state = READY;
+		addToReady(running);
+	};
 	
 	process = removeFromReady();
 	if (process == NULL) {
