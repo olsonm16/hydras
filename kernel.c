@@ -494,7 +494,6 @@ int writeFile(char *fname, char *buffer, int sectors) {
 	for (i = 0; i < 512; i+=32) {
 		//If the file is found, we want to overwrite the sectors related to that file with the new data, and additional sectors if necessary.
 		if (strCmp(disk_directory + i, fname, 6)) {
-			printString("found match\0");
 			//Again, we want to write n sectors to memory. Let's go ahead and write to the ones already taken up, and see if we need to do any more.
 			s = 0;
 			while (s < sectors) {
@@ -604,6 +603,7 @@ int findSectors(int numSectors, int * sectors) {
 /*
 Directory prints a list of files on the disk.
 The directory array is built for printout, and printed in here.
+Also, the number of sectors used by each file is printed.
 Could be printed in shell or stored for future use.
 */
 
@@ -611,6 +611,8 @@ int dir(char * directory) {
 	int i;
 	int j;
 	int k;
+	int l;
+	int sector_count;
 	int count;
 	char disk_directory[512];
 	
@@ -633,10 +635,32 @@ int dir(char * directory) {
 					count++;
 				};
 			};
+			sector_count = 0;				
+			for (l = 6; l < 32; l++) {
+				if (disk_directory[i + l] > 0) {
+					sector_count++;
+				};
+			};
+			directory[count] = '\t';
+			count++;
+			if (sector_count >= 10) {
+				int tens = sector_count/10;
+				int ones = mod(sector_count, 10);
+				directory[count] = tens + '0';
+				count++;
+				directory[count] = ones + '0';
+				count++;
+			} else {
+				directory[count] = sector_count + '0';
+				count++;
+			}
+			
 			directory[count] = '\r';
 			count++;
 			directory[count] = '\n';
 			count++;
+			
+			sector_count = 0;
 
 		};
 	};
