@@ -56,9 +56,6 @@ main() {
 			};
 		} else if (strCmp(buf, "dir\0", 3)) {
 			result = dir(directory);
-			//print("\r\n\0");
-			//print(directory);
-			//print("\r\n\0");
 
 		} else if (strCmp(buf, "delete\0", 6)) {
 			result = delete(buf + 7);

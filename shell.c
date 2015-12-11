@@ -56,9 +56,6 @@ main() {
 			};
 		} else if (strCmp(buf, "dir\0", 3)) {
 			result = dir(directory);
-			//print("\r\n\0");
-			//print(directory);
-			//print("\r\n\0");
 
 		} else if (strCmp(buf, "delete\0", 6)) {
 			result = delete(buf + 7);
@@ -108,14 +105,16 @@ main() {
 			}
 		} else if (strCmp(buf, "help\0", 4)) {
 			print("\r\nHydras is a basic OS that can do a few things for you. \r\n\0");
-			print("The current implementation (Version 0.4) can work with files. \r\n\0");
+			print("The current implementation (Version 0.5) can work with files and processes. \r\n\0");
 			print("To see the files you have on the disk, type dir. \r\n\0");
 			print("To view the contents of a file, enter type <filename> (no braces). \r\n\0");
 			print("To execute a program, type execute <progname>. \r\n\0");
 			print("One such program is txtedt. You may create and save a txt file using txtedt. \r\n\0");
 			print("Enter copy <source filename> <destination filename> to copy a file. \r\n\0");
 			print("Enter delete <filename> to delete a file. \r\n\0");
-			print("In version 0.5, we will implement processes explicitly. \r\n\0");
+			print("Type ps to see processes running.\r\n\0");
+			print("Type kill <pid> to kill the process with pid.\r\n\0");
+			
 		
 		} else if (strCmp(buf, "ps\0", 2)) {
 			showProcesses();

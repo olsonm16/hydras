@@ -21,7 +21,6 @@ int executeProgram(char * filename);
 void terminate(c);
 int deleteFile(char *filename);
 int findSectors(int numSectors, int * sectors);
-int freeSectors();
 int writeFile(char *fname, char *buffer, int sectors); 
 int dir(char * directory);
 void handleTimerInterrupt(int segment, int stackPointer);
@@ -32,7 +31,9 @@ int kill(int segment);
 
 
 /*
-Main just runs our shell function using an interrupt.
+Main is run when the Kernel starts. It causes both interrupt21 and timerInterrupt to initialize
+in the assembly functions, as well as initializes the process structures required for multiprogramming.
+Then, the user shell is launched using an execute interrupt.
 */
 int main() {
 
@@ -99,9 +100,11 @@ int strCmp(char * a, char * b, int len) {
 executeProgram takes a file name.
 A free segment is retrieved from the proc.c class.
 File name is read into a buffer using readfile.
-If the file is not found, -2 is returned.
-Otherwise, the file is put in memory at the segment location, character by character.
-Then, the program is launched using the kernel command, and 0 is returned.
+If the file is not found, -1 is returned.
+If a free memory segment is not found, -2 is returned.
+If a segment is found, the file is put in memory at the segment location, character by character.
+The process created is marked as ready, with pointers to the program source.
+Then, the program is initialized using the kernel command, and 1 is returned.
 */
 
 int executeProgram(char * filename) {
@@ -192,8 +195,8 @@ int mod(int a, int b) {
 	result = a - b*(a/b);
 	return result;
 }
-//Reads a string and puts it to the window at the specified location with putChar.
 
+//Reads a string and puts it to the window at the specified location with putChar.
 void putStr(char * string, int color, int row, int column) {
 
 	while (*string != '\0') {
@@ -321,6 +324,12 @@ if ax == 0x01, reads a string in, stores it in bx. Returns the counter from read
 if ax == 0x03, file is read with filename bx, stored in cx.
 if ax == 0x04, program is executed with filename bx, memory location segment cx.
 if ax == 0x05, the terminate function is executed.
+if ax == 0x07, delete file is called on the filename  in bx.
+if ax == 0x08, the buffer in bx is written to the location in cx, of size dx sectors.
+if ax == 0x09, the directory function is called.
+if ax == 0x0A, the show processes function is called.
+if ax == 0x0B, the kill process function is called on bx (process id).
+if ax == 0x0C, yield is called.
 Else, -1 is returned.
 */
 int handleInterrupt21(int ax, int bx, int cx, int dx) {
@@ -384,6 +393,10 @@ int handleInterrupt21(int ax, int bx, int cx, int dx) {
 	return -1;
 };
 
+/*
+Removes the file of filename by finding the sector it is located at, marking the first char in the filename to null in the disk directory,
+and marking the sectors the filename used as unused in the disk map.
+*/
 int deleteFile(char *filename) {
 	int i;
 	int j;
@@ -435,18 +448,6 @@ int deleteFile(char *filename) {
 /*
 
 Writing a file requires finding an empty entry in the Disk Directory and finding a free sector in the Disk Map for each sector making up the file. The data for each sector is written into a free sector on the disk and the sector numbers that are used are entered into the Disk Directory entry for the file. The modified Disk Directory and Disk Map must then be written back to the disk to save the changes.
-A d d a  w r i t e F i l e  f u n c t i o n t o y o u r k e r n e l w i t h t h e s i g n a t u r e :
-int writeFile(char *fname, char *buffer, int sectors);
-T h i s f u n c t i o n s h o u l d w r i t e  s e c t o r s  * 5 1 2 b y t e s o f d a t a f r o m t h e b u f f e r i n t o a f i l e w i t h t h e n a m e indicated by  fname. 
-● I f t h e f i l e i n d i c a t e d b y  f n a m e  a l r e a d y e x i s t s , t h e n e w f i l e o v e r w r i t e s i t .
-● The maximum number of sectors that may be written is 26. If  sectors is larger than 26,
-then only the first 26 sectors should be written.
-● If the file is successfully written, this function returns the number of sectors that were
-written.
-● If there is no Disk Directory entry available for the new file, this function should return -1
-and the file is not written.
-● I f t h e D i s k M a p c o n t a i n s f e w e r t h a n  s e c t o r s  f r e e s e c t o r s , t h i s f u n c t i o n s h o u l d w r i t e a s
-many sectors as possible and return -2.
 
 */
 	
@@ -495,7 +496,6 @@ int writeFile(char *fname, char *buffer, int sectors) {
 		if (strCmp(disk_directory + i, fname, 6)) {
 			printString("found match\0");
 			//Again, we want to write n sectors to memory. Let's go ahead and write to the ones already taken up, and see if we need to do any more.
-			//for (s = 0; s < sectors; s++) {
 			s = 0;
 			while (s < sectors) {
 				//We found a sector to overwrite, hooray!
@@ -513,7 +513,6 @@ int writeFile(char *fname, char *buffer, int sectors) {
 						if (writeSectors[z-s] != 0) {
 							sector_count++;
 							disk_directory[z + i + 6] = writeSectors[z-s];
-							//disk_map[writeSectors[z-s]] = 0xFF;
 							writeSector(buffer_parts[z], writeSectors[z-s]);
 					};
 				}
@@ -522,7 +521,6 @@ int writeFile(char *fname, char *buffer, int sectors) {
 			};
 			
 			writeSector(disk_directory, 2);
-			//writeSector(disk_map, 1);
 
 			if (found) {
 				return sector_count;
@@ -532,9 +530,7 @@ int writeFile(char *fname, char *buffer, int sectors) {
 		};
 	};
 
-	printString("pls");
-
-	//That was pretty ugly...! Ok. If nothing was returned then the filename wasn't found, so we need to save it.
+	//If nothing was returned then the filename wasn't found, so we need to save it.
 				
 	for (i = 0; i < 512; i += 32) {
 		if (disk_directory[i] == 0) {
@@ -546,13 +542,11 @@ int writeFile(char *fname, char *buffer, int sectors) {
 				if (writeSectors[z] != 0) {
 					sector_count++;
 					disk_directory[z + i + 6] = writeSectors[z];
-					//disk_map[writeSectors[z]] = 0xFF;	
 					writeSector(buffer_parts[z], writeSectors[z]);
 				};
 			};
 			
 			writeSector(disk_directory, 2);
-			//writeSector(disk_map, 1);
 
 			if (found) {
 				return sector_count;
@@ -566,8 +560,12 @@ int writeFile(char *fname, char *buffer, int sectors) {
 
 }
 
-	
-	
+/*
+Find sectors takes a number of sectors needed, and an int array sectors.
+The sectors array is filled with the first numSectors free sectors found.
+If the number of desired sectors is found, 1 is returned.
+OTherwise, -2 is returned, indicating there isn't enough space in memory.
+*/	
 
 int findSectors(int numSectors, int * sectors) {
 	char disk_map[512];
@@ -583,9 +581,6 @@ int findSectors(int numSectors, int * sectors) {
 	while (i < 256) {
 		if (numSectors != 0) {
 			if (disk_map[i] != 0xFF) {
-				//printInt(disk_map[i]);
-				//printString(" \0");
-				//printInt(i);
 				sectors[h] = i;
 				h++;
 				numSectors--;
@@ -606,31 +601,11 @@ int findSectors(int numSectors, int * sectors) {
 	};
 
 }
-
-int freeSectors() {
-	char disk_map[512];
-	int j;
-	int i;
-	int sectors;
-
-	j = readSector(disk_map, 1);
-	sectors = 0;
-	i = 0;
-
-	while (i < 256) {
-		if (disk_map[i] != 0xFF) {
-			sectors++;
-		}
-		i++;
-	};
-
-	return sectors;
-
-};
-	
-		
-	
-
+/*
+Directory prints a list of files on the disk.
+The directory array is built for printout, and printed in here.
+Could be printed in shell or stored for future use.
+*/
 
 int dir(char * directory) {
 	int i;
@@ -673,6 +648,13 @@ int dir(char * directory) {
 
 }
 
+/*
+Handle Timer Interrupt takes in a memory segment and stackPointer for the current running process.
+The running process is updated with those locations, and set to ready, then added to the ready Queue.
+Next, a new process is removed from ready queue, and set to the running process.
+Then, that new process is resumed with the returnFromTimer function.
+*/
+
 void handleTimerInterrupt(int segment, int stackPointer) {
 
 	struct PCB * process;
@@ -699,6 +681,11 @@ void handleTimerInterrupt(int segment, int stackPointer) {
 
 }
 
+/*
+Terminate is called inside a program. The program, then, is the running process, and that process's memory is released.
+the pcb of the running process is released, and the running process is set as DEFUNCT.
+*/
+
 void terminate() {
 
 	setKernelDataSegment();
@@ -717,6 +704,10 @@ void terminate() {
 
 };
 
+/*
+Helper function for copying the first len chars of src string into dest.
+*/
+
 void kStrCopy(char *src, char *dest, int len) {
 	int i=0;
 	for (i=0; i<len; i++) {
@@ -727,6 +718,10 @@ void kStrCopy(char *src, char *dest, int len) {
 	}
 }
 
+/*
+Yield causes the running function to give up its remaining time and hop back on the ready queue.
+*/
+
 void yield() {
 
 	setKernelDataSegment();
@@ -734,6 +729,10 @@ void yield() {
 	restoreDataSegment();
 	
 };
+
+/*
+Parses the pcbPool, printing out the process names and segments (as ints from 0-7).
+*/
 
 void showProcesses() {
 	
@@ -756,6 +755,11 @@ void showProcesses() {
 	restoreDataSegment();
 	
 };
+
+/*
+Kills the process running at the segment.
+returns -1 if a process is not found at that segment.
+*/
 
 int kill(int segment) {
 
