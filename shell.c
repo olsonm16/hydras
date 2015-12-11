@@ -60,8 +60,9 @@ main() {
 		} else if (strCmp(buf, "delete\0", 6)) {
 			result = delete(buf + 7);
 			if (result < 1) {
+				print("\n\r\0");
 				print(buf + 7);
-				print("File not found\0");
+				print(": File not found\r\n\0");
 			} else {
 				print("\r\n\0");
 				print(buf + 7);
@@ -90,7 +91,7 @@ main() {
 			result = readFile(source, file_contents);
 
 			if (result < 1) {
-				print("File not found\r\n\0");
+				print("\r\nSource file not found\r\n\0");
 			} else {
 				
 				result = write(destination, file_contents, result);

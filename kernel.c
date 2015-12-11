@@ -130,11 +130,10 @@ int executeProgram(char * filename) {
 	seg = getFreeMemorySegment();
 	restoreDataSegment();
 	if (seg < 0) {
-		//printString("Out of memory!\n");
+		printString("Out of memory!\n");
 		return -2;
 	};
 	segment = 0x1000*(seg+2);
-	//restoreDataSegment();
 	
 	//Put each bit of the program in memory starting at the memory segment returned.
 	for (i = 0; i < sector*512; i++) {
@@ -769,7 +768,7 @@ void showProcesses() {
 	for (i=0; i<8; i++) {
 		if (pcbPool[i].name[0] != 0x00) {
 			printString(pcbPool[i].name);
-			printString("\t");
+			printString("\t\t");
 			printInt((pcbPool[i].segment)/(0x1000) - 2);
 			printString("\r\n\0");
 		
