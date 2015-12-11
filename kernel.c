@@ -18,7 +18,7 @@ int readFile(char *filename, char *buf);
 int strCmp(char * a, char * b, int len);
 int printInt(int integer);
 int executeProgram(char * filename);
-void terminate(c);
+void terminate();
 int deleteFile(char *filename);
 int findSectors(int numSectors, int * sectors);
 int writeFile(char *fname, char *buffer, int sectors); 
