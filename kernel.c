@@ -9,6 +9,7 @@ CS 330 OS Project 5
 void putChar(char ch, int color, int row, int column);
 void putStr(char * string, int color, int row, int column);
 int printString(char * string);
+int printColorString(char * string, int color);
 int readChar();
 int mod(int a, int b);
 int readSector(char *buf, int absSector);
@@ -41,6 +42,9 @@ int main() {
 	makeInterrupt21();
 	makeTimerInterrupt();
 	initializeProcStructures();
+	
+	putStr("\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r~HYDRAS OS~\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r", 0X09, 16, 16);
+	printString("Enter help to see functionality possible in this version (0.5).\r\n\0");
 
 	interrupt(0x21, 0x04, "shell\0", 0, 0);
 
@@ -207,8 +211,7 @@ void putStr(char * string, int color, int row, int column) {
 
 /*Given an input string, prints string at cursor location with interrupt function.
 Returns counter
-Handles backspace by decrementing counter and string so that the final string is correct
-Does not 'backspace' the echoed string - not sure how to fix what's already been printed.*/
+*/
 int printString(char * string) {
 	int counter;
 	counter = 0; 
@@ -217,6 +220,24 @@ int printString(char * string) {
 		char ah = 0x0E;
 		int ax = ah * 256 + al;
 		interrupt(0x10, ax, 0, 0, 0);
+		string++;
+		counter ++;
+	};
+	
+	return counter;
+}
+
+/*Given an input string, prints string at cursor location with interrupt function.
+Returns counter
+*/
+int printColorString(char * string, int color) {
+	int counter;
+	counter = 0; 
+	while (*string != '\0') {
+		char al = *string;
+		char ah = 0x0E;
+		int ax = ah * 256 + al;
+		interrupt(0x10, ax, color, 0, 0);
 		string++;
 		counter ++;
 	};
